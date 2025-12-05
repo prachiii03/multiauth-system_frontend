@@ -1,0 +1,342 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/app/providers/AuthProvider';
+import PermissionGuard from '@/app/components/ui/PermissionGuard';
+
+export default function EditDepartmentPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    code: '',
+    permissions: [],
+    isActive: true
+  });
+  
+  const [availablePermissions, setAvailablePermissions] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const params = useParams();
+  const router = useRouter();
+  const { hasPermission } = useAuth();
+  const departmentId = params.id;
+
+  useEffect(() => {
+    fetchDepartment();
+    fetchAvailablePermissions();
+  }, [departmentId]);
+
+  const fetchDepartment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/departments/${departmentId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        const dept = data.data;
+        setFormData({
+          name: dept.name || '',
+          description: dept.description || '',
+          code: dept.code || '',
+          permissions: dept.permissions || [],
+          isActive: dept.isActive || true
+        });
+      }
+    } catch (error) {
+      setError('Failed to fetch department data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAvailablePermissions = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/roles/permissions', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setAvailablePermissions(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching permissions:', error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handlePermissionChange = (permissionCode, checked) => {
+    setFormData(prev => {
+      let newPermissions = [...prev.permissions];
+      
+      if (checked) {
+        newPermissions.push(permissionCode);
+      } else {
+        newPermissions = newPermissions.filter(p => p !== permissionCode);
+      }
+      
+      return {
+        ...prev,
+        permissions: newPermissions
+      };
+    });
+  };
+
+  const handleSelectAll = (category) => {
+    const categoryPermissions = availablePermissions[category] || [];
+    const currentPermissions = new Set(formData.permissions);
+    
+    // Check if all permissions in category are already selected
+    const allSelected = categoryPermissions.every(p => currentPermissions.has(p.code));
+    
+    if (allSelected) {
+      // Deselect all permissions in this category
+      const newPermissions = formData.permissions.filter(p => 
+        !categoryPermissions.some(cp => cp.code === p)
+      );
+      setFormData(prev => ({ ...prev, permissions: newPermissions }));
+    } else {
+      // Select all permissions in this category
+      const newPermissions = [...new Set([...formData.permissions, ...categoryPermissions.map(p => p.code)])];
+      setFormData(prev => ({ ...prev, permissions: newPermissions }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/departments/${departmentId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess('Department updated successfully!');
+        setTimeout(() => {
+          router.push(`/dashboard/departments/${departmentId}`);
+        }, 1500);
+      } else {
+        setError(data.message || 'Failed to update department');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+      console.error('Error:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const permissionCategories = [
+    { key: 'user', label: 'User Permissions' },
+    { key: 'lead', label: 'Lead Permissions' },
+    { key: 'property', label: 'Property Permissions' },
+    { key: 'activity', label: 'Activity Permissions' },
+    { key: 'system', label: 'System Permissions' },
+    { key: 'report', label: 'Report Permissions' },
+    { key: 'data', label: 'Data Permissions' }
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <PermissionGuard requiredPermission="system_management">
+      <div className="p-6 max-w-4xl mx-auto">
+        <div className="mb-6">
+          <button
+            onClick={() => router.back()}
+            className="text-gray-600 hover:text-gray-900 mb-4 inline-flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Department
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">Edit Department</h1>
+          <p className="text-gray-600">Update department information and permissions</p>
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow border border-gray-200 p-6">
+          {/* Department Details */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Department Details</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Department Name *
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., Administration"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Department Code *
+                </label>
+                <input
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                  placeholder="e.g., ADMIN"
+                />
+                <p className="text-xs text-gray-500 mt-1">Unique uppercase code</p>
+              </div>
+              
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Department description..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Status</h2>
+            
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="isActive"
+                name="isActive"
+                checked={formData.isActive}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+              />
+              <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
+                Department is active
+              </label>
+            </div>
+          </div>
+
+          {/* Permissions Section */}
+          <div className="mb-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">Department Permissions</h2>
+              <div className="text-sm text-gray-500">
+                {formData.permissions.length} permission(s) selected
+              </div>
+            </div>
+
+            <div className="space-y-8">
+              {permissionCategories.map((category) => (
+                <div key={category.key} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium text-gray-900">{category.label}</h3>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAll(category.key)}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Select All
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {availablePermissions[category.key]?.map((permission) => (
+                      <div key={permission.code} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`perm-${permission.code}`}
+                          checked={formData.permissions.includes(permission.code)}
+                          onChange={(e) => handlePermissionChange(permission.code, e.target.checked)}
+                          className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                        />
+                        <label htmlFor={`perm-${permission.code}`} className="ml-2 text-sm text-gray-700">
+                          {permission.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              {submitting ? 'Updating...' : 'Update Department'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </PermissionGuard>
+  );
+}
