@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://multiauth-system-backend-f3oe.vercel.app/api';
 
 // Generic fetch with auth
 export async function fetchWithAuth(endpoint, options = {}) {

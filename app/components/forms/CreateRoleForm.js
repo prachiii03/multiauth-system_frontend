@@ -27,7 +27,7 @@ export default function CreateRoleForm({ roleId, onSuccess }) {
   const fetchPermissions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/roles/permissions', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/roles/permissions', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -47,7 +47,7 @@ export default function CreateRoleForm({ roleId, onSuccess }) {
   const fetchRole = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/roles/${roleId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/roles/${roleId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -119,8 +119,8 @@ export default function CreateRoleForm({ roleId, onSuccess }) {
     try {
       const token = localStorage.getItem('token');
       const url = roleId 
-        ? `http://localhost:5000/api/roles/${roleId}`
-        : 'http://localhost:5000/api/roles';
+        ? `https://multiauth-system-backend-f3oe.vercel.app/api/roles/${roleId}`
+        : 'https://multiauth-system-backend-f3oe.vercel.app/api/roles';
       
       const method = roleId ? 'PUT' : 'POST';
 

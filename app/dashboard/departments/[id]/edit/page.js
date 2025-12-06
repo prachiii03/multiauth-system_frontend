@@ -32,7 +32,7 @@ export default function EditDepartmentPage() {
   const fetchDepartment = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/departments/${departmentId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/departments/${departmentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -59,7 +59,7 @@ export default function EditDepartmentPage() {
   const fetchAvailablePermissions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/roles/permissions', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/roles/permissions', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -127,7 +127,7 @@ export default function EditDepartmentPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/departments/${departmentId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/departments/${departmentId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

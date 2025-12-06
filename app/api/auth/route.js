@@ -6,7 +6,7 @@ export async function POST(request) {
     const { action, ...data } = body;
 
     // This is a proxy endpoint to your backend
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://multiauth-system-backend-f3oe.vercel.app';
 
     let endpoint = '';
     switch (action) {
@@ -54,7 +54,7 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://multiauth-system-backend-f3oe.vercel.app';
     
     const response = await fetch(`${backendUrl}/api/auth/me`, {
       headers: {

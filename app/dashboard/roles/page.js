@@ -20,7 +20,7 @@ export default function RolesPage() {
   const fetchRoles = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/roles', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/roles', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

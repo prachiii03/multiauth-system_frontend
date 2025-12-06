@@ -21,7 +21,7 @@ export default function RegisterPage() {
   const router = useRouter();
 
   // Get API URL from environment variable
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://multiauth-system-backend-f3oe.vercel.app';
 
   useEffect(() => {
     fetchData();

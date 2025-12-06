@@ -29,7 +29,7 @@ export default function EditRolePage() {
   const fetchPermissions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/roles/permissions', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/roles/permissions', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -45,7 +45,7 @@ export default function EditRolePage() {
   const fetchRole = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/roles/${roleId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/roles/${roleId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -104,7 +104,7 @@ export default function EditRolePage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/roles/${roleId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/roles/${roleId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

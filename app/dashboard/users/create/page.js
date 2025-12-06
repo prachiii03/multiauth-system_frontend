@@ -31,10 +31,10 @@ export default function CreateUserPage() {
       const token = localStorage.getItem('token');
       
       const [deptRes, roleRes] = await Promise.all([
-        fetch('http://localhost:5000/api/departments', {
+        fetch('https://multiauth-system-backend-f3oe.vercel.app/api/departments', {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('http://localhost:5000/api/roles', {
+        fetch('https://multiauth-system-backend-f3oe.vercel.app/api/roles', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);
@@ -75,7 +75,7 @@ export default function CreateUserPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/users', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

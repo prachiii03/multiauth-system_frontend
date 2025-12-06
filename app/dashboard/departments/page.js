@@ -20,7 +20,7 @@ export default function DepartmentsPage() {
   const fetchDepartments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/departments', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/departments', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -48,7 +48,7 @@ export default function DepartmentsPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/departments/${id}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/departments/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

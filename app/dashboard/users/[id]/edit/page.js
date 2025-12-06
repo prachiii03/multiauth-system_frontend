@@ -34,7 +34,7 @@ export default function EditUserPage() {
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -61,7 +61,7 @@ export default function EditUserPage() {
   const fetchDepartments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/departments', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/departments', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -79,7 +79,7 @@ export default function EditUserPage() {
   const fetchRoles = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/roles', {
+      const response = await fetch('https://multiauth-system-backend-f3oe.vercel.app/api/roles', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -110,7 +110,7 @@ export default function EditUserPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -148,7 +148,7 @@ export default function EditUserPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/reset-password`, {
+      const response = await fetch(`https://multiauth-system-backend-f3oe.vercel.app/api/users/${userId}/reset-password`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
